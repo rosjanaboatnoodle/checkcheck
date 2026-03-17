@@ -581,19 +581,19 @@
       return { qty: n, unit: u };
     }
 
-function getComparableQty_(it) {
-  const base = Number(it?.quantity_base);
-  if (isFinite(base)) return base;
+    function getComparableQty_(it) {
+      const base = Number(it?.quantity_base);
+      if (isFinite(base)) return base;
 
-  const qty = Number(it?.quantity);
-  if (isFinite(qty)) return qty;
+      const qty = Number(it?.quantity);
+      if (isFinite(qty)) return qty;
 
-  const rawQty = Number(it?.quantity_raw ?? NaN);
-  const meta = ITEM_META_BY_NAME[it?.name] || {};
-  const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
-  const unitSelected = String(it?.unit_input || it?.unit || "").trim();
-  return normalizeQtyToBase_(rawQty, unitSelected, unitOptions).qty;
-}
+      const rawQty = Number(it?.quantity_raw ?? NaN);
+      const meta = ITEM_META_BY_NAME[it?.name] || {};
+      const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
+      const unitSelected = String(it?.unit_input || it?.unit || "").trim();
+      return normalizeQtyToBase_(rawQty, unitSelected, unitOptions).qty;
+    }
 
     function getDisplayUnit_(it) {
       const meta = ITEM_META_BY_NAME[it?.name] || {};
@@ -602,26 +602,25 @@ function getComparableQty_(it) {
       return normalizeQtyToBase_(1, unitSelected, unitOptions).unit || unitSelected || "";
     }
 
-function getDisplayQty_(it) {
-  const base = Number(it?.quantity_base);
-  if (isFinite(base)) return base;
+    function getDisplayQty_(it) {
+      const base = Number(it?.quantity_base);
+      if (isFinite(base)) return base;
 
-  const qty = Number(it?.quantity);
-  if (isFinite(qty)) return qty;
+      const qty = Number(it?.quantity);
+      if (isFinite(qty)) return qty;
 
-  const raw = Number(it?.quantity_raw ?? 0);
-  const meta = ITEM_META_BY_NAME[it?.name] || {};
-  const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
-  const unitSelected = String(it?.unit_input || it?.unit || "").trim();
-  return normalizeQtyToBase_(raw, unitSelected, unitOptions).qty;
-}
+      const raw = Number(it?.quantity_raw ?? 0);
+      const meta = ITEM_META_BY_NAME[it?.name] || {};
+      const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
+      const unitSelected = String(it?.unit_input || it?.unit || "").trim();
+      return normalizeQtyToBase_(raw, unitSelected, unitOptions).qty;
+    }
 
-function fmtQty(v) {
-  const n = Number(v);
-  if (!isFinite(n)) return String(v ?? "");
-
-  return n.toFixed(3).replace(/\.?0+$/, "");
-}
+    function fmtQty(v) {
+      const n = Number(v);
+      if (!isFinite(n)) return String(v ?? "");
+      return n.toFixed(3).replace(/\.?0+$/, "");
+    }
 
     function loadDraft_() {
       try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); }
@@ -1298,7 +1297,7 @@ function fmtQty(v) {
                 return `
                   <tr class="hover:bg-gray-50">
                     <td class="px-4 py-3 font-medium text-gray-800">${tItem(item.name)}</td>
-                    <td class="px-4 py-3 text-center font-semibold ${(Number(item.quantity ?? 0) > 0) ? "text-green-600" : "text-red-500"}">${fmtQty(getDisplayQty_(item))}</td>
+                    <td class="px-4 py-3 text-center font-semibold ${(Number(getDisplayQty_(item)) > 0) ? "text-green-600" : "text-red-500"}">${fmtQty(getDisplayQty_(item))}</td>
                     <td class="px-4 py-3 text-center text-gray-600">${tUnit(getDisplayUnit_(item))}</td>
                     ${comparison}
                     <td class="px-4 py-3 text-gray-500">${item.note || "-"}</td>
@@ -1323,7 +1322,9 @@ function fmtQty(v) {
 
       const today = new Date();
       document.getElementById("current-date").textContent = formatDate(today, currentLanguage);
-      document.getElementById("filter-date").valueAsDate = today;
+
+      // ไม่ตั้งค่า filter วันที่อัตโนมัติ เพื่อให้หน้าประวัติแสดงข้อมูลทั้งหมด
+      document.getElementById("filter-date").value = "";
 
       updateLanguage();
       startSheetPolling_();
