@@ -581,14 +581,19 @@
       return { qty: n, unit: u };
     }
 
-    function getComparableQty_(it) {
-      if (typeof it?.quantity_base === "number" && isFinite(it.quantity_base)) return it.quantity_base;
-      const rawQty = Number(it?.quantity_raw ?? it?.quantity ?? NaN);
-      const meta = ITEM_META_BY_NAME[it?.name] || {};
-      const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
-      const unitSelected = String(it?.unit_input || it?.unit || "").trim();
-      return normalizeQtyToBase_(rawQty, unitSelected, unitOptions).qty;
-    }
+function getComparableQty_(it) {
+  const base = Number(it?.quantity_base);
+  if (isFinite(base)) return base;
+
+  const qty = Number(it?.quantity);
+  if (isFinite(qty)) return qty;
+
+  const rawQty = Number(it?.quantity_raw ?? NaN);
+  const meta = ITEM_META_BY_NAME[it?.name] || {};
+  const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
+  const unitSelected = String(it?.unit_input || it?.unit || "").trim();
+  return normalizeQtyToBase_(rawQty, unitSelected, unitOptions).qty;
+}
 
     function getDisplayUnit_(it) {
       const meta = ITEM_META_BY_NAME[it?.name] || {};
@@ -597,21 +602,26 @@
       return normalizeQtyToBase_(1, unitSelected, unitOptions).unit || unitSelected || "";
     }
 
-    function getDisplayQty_(it) {
-      const raw = Number(it?.quantity ?? it?.quantity_raw ?? 0);
-      const meta = ITEM_META_BY_NAME[it?.name] || {};
-      const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
-      const unitSelected = String(it?.unit_input || it?.unit || "").trim();
-      return normalizeQtyToBase_(raw, unitSelected, unitOptions).qty;
-    }
+function getDisplayQty_(it) {
+  const base = Number(it?.quantity_base);
+  if (isFinite(base)) return base;
 
-    function fmtQty(v) {
-      const n = Number(v);
-      if (!isFinite(n)) return String(v ?? "");
-      let s = (Math.round(n * 1000) / 1000).toString();
-      if (s.includes(".")) s = s.replace(/\.0+$/,"").replace(/(\.\d*[1-9])0+$/,"$1");
-      return s;
-    }
+  const qty = Number(it?.quantity);
+  if (isFinite(qty)) return qty;
+
+  const raw = Number(it?.quantity_raw ?? 0);
+  const meta = ITEM_META_BY_NAME[it?.name] || {};
+  const unitOptions = getUnitOptions_({ name: it?.name || "", unit: meta.defaultUnit || "" });
+  const unitSelected = String(it?.unit_input || it?.unit || "").trim();
+  return normalizeQtyToBase_(raw, unitSelected, unitOptions).qty;
+}
+
+function fmtQty(v) {
+  const n = Number(v);
+  if (!isFinite(n)) return String(v ?? "");
+
+  return n.toFixed(3).replace(/\.?0+$/, "");
+}
 
     function loadDraft_() {
       try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); }
